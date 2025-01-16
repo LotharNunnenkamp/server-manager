@@ -47,7 +47,8 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Server get(Long id) {
-        return null;
+        log.info("Fetching server by id: {}", id);
+        return serverRepository.findById(id).orElseThrow(() -> new RuntimeException("Server not found for id: " + id));
     }
 
     @Override
