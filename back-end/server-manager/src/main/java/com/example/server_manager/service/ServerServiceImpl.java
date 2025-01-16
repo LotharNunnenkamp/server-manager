@@ -59,7 +59,9 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Boolean delete(Long id) {
-        return null;
+        log.info("Deleting server id: {}", id);
+        serverRepository.deleteById(id);
+        return Boolean.TRUE;
     }
 
     private String setServerImageUrl() {
