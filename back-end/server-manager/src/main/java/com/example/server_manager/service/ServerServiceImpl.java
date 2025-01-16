@@ -4,6 +4,7 @@ import com.example.server_manager.enums.Status;
 import com.example.server_manager.model.Server;
 import com.example.server_manager.repository.ServerRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -18,10 +19,10 @@ import java.util.Random;
 @Service
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class ServerServiceImpl implements ServerService {
 
-    @Autowired
-    private ServerRepository serverRepository;
+    private final ServerRepository serverRepository;
 
     @Override
     public Server create(Server server) {
