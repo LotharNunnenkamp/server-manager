@@ -6,6 +6,7 @@ import com.example.server_manager.repository.ServerRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -40,7 +41,8 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Collection<Server> list(int limit) {
-        return List.of();
+        log.info("Fetching all servers");
+        return serverRepository.findAll(PageRequest.of(0, limit)).toList();
     }
 
     @Override
