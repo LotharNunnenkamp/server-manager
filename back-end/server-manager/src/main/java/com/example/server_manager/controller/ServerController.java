@@ -10,9 +10,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
+
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
 @RequestMapping("/server")
@@ -85,5 +93,14 @@ public class ServerController {
                         .statusCode(HttpStatus.OK.value())
                         .build()
         );
+    }
+
+    @GetMapping(path = "/image/{fileName}", produces = IMAGE_PNG_VALUE)
+    public byte[] getServerImage(@PathVariable("fileName") String fileName) throws IOException, URISyntaxException {
+        URL resource = getClass().getClassLoader().getResource("images/" + fileName);
+        if (resource == null){
+            throw new FileNotFoundException("Imagem não encontrada: " + fileName);
+        }
+        return Files.readAllBytes(Paths.get(resource.toURI()));
     }
 }
