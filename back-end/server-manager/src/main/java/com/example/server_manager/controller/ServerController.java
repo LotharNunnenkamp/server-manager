@@ -4,13 +4,11 @@ import com.example.server_manager.enums.Status;
 import com.example.server_manager.model.Response;
 import com.example.server_manager.model.Server;
 import com.example.server_manager.service.ServerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -46,6 +44,19 @@ public class ServerController {
                         .message(server.getStatus() == Status.SERVER_UP ? "Ping success" : "Ping failed")
                         .httpStatus(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
+                        .build()
+        );
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Response> saveServer(@RequestBody @Valid Server server){
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                Response.builder()
+                        .timeStamp(LocalDateTime.now())
+                        .data(Map.of("server", serverService.create(server)))
+                        .message("Server created")
+                        .httpStatus(HttpStatus.CREATED)
+                        .statusCode(HttpStatus.CREATED.value())
                         .build()
         );
     }
