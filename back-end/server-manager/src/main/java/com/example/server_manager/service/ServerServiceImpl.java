@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.List;
@@ -28,8 +29,13 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public Server ping(String ipAddress) {
-        return null;
+    public Server ping(String ipAddress) throws IOException {
+        log.info("Pinging server IP: {}", ipAddress);
+        Server server = serverRepository.findByIpAddress(ipAddress);
+        InetAddress inetAddress = InetAddress.getByName(ipAddress);
+        server.setStatus(inetAddress.isReachable(10000) ? Status.SERVER_UP : Status.SERVER_DOWN);
+        serverRepository.save(server);
+        return server;
     }
 
     @Override

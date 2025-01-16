@@ -2,13 +2,14 @@ package com.example.server_manager.service;
 
 import com.example.server_manager.model.Server;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface ServerService {
 
     Server create(Server server);
 
-    Server ping(String ipAddress);
+    Server ping(String ipAddress) throws IOException;
 
     Collection<Server> list(int limit);
 
