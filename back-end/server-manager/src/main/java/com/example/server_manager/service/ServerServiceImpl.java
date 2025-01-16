@@ -53,7 +53,8 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Server update(Server server) {
-        return null;
+        log.info("Updating server: {}", server.getName());
+        return serverRepository.save(server);
     }
 
     @Override
