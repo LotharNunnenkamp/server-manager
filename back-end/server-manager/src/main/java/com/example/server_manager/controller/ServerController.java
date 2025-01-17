@@ -97,7 +97,7 @@ public class ServerController {
 
     @GetMapping(path = "/image/{fileName}", produces = IMAGE_PNG_VALUE)
     public byte[] getServerImage(@PathVariable("fileName") String fileName) throws IOException, URISyntaxException {
-        URL resource = getClass().getClassLoader().getResource("images/" + fileName);
+        URL resource = getClass().getClassLoader().getResource("static/images/" + fileName);
         if (resource == null){
             throw new FileNotFoundException("Imagem não encontrada: " + fileName);
         }
