@@ -14,9 +14,7 @@ export class ServerService {
 
   servers$: Observable<CustomResponse> | null = null;
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit(): void {
+  constructor(private http: HttpClient) {
     this.servers$ = this.http.get<CustomResponse>(`${this.apiUrl}/server/list`)
     .pipe(
       tap(console.log),
