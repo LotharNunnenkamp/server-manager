@@ -39,6 +39,14 @@ export class ServerService {
     );
   }
 
+  delete$ = (serverId: number): Observable<CustomResponse> =>{
+    return this.http.delete<CustomResponse>(`${this.apiUrl}/server/ping/${serverId}`)
+    .pipe(
+      tap(console.log),
+      catchError(this.handleError)
+    );
+  }
+
   handleError(handleError: any): Observable<never> {
     return throwError(() => new Error('Method not implemented.'));
   }
