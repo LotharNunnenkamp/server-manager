@@ -23,8 +23,16 @@ export class ServerService {
     );
   }
 
-  save = (server: Server): Observable<CustomResponse> =>{
+  save$ = (server: Server): Observable<CustomResponse> =>{
     return this.http.post<CustomResponse>(`${this.apiUrl}/server/save`, server)
+    .pipe(
+      tap(console.log),
+      catchError(this.handleError)
+    );
+  }
+
+  ping$ = (ipAddress: string): Observable<CustomResponse> =>{
+    return this.http.get<CustomResponse>(`${this.apiUrl}/server/ping/${ipAddress}`)
     .pipe(
       tap(console.log),
       catchError(this.handleError)
