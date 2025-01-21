@@ -1,1 +1,27 @@
-<div>{{appState$ | async | json}}</div>
+<div class="container-xl">
+  <div class="table-responsive">
+    <div class="table-wrapper">
+      <div class="table-title">
+        <div class="row">
+          <div class="col-sm-6">
+            <h2>Manage Servers</h2>
+          </div>
+          <div class="col-sm-6">
+            <select class="btn btn-info" name="status">
+              <option value="ALL">ALL</option>
+              <option value="SERVER_UP">SERVER UP</option>
+              <option value="SERVER_DOWN">SERVER DOWN</option>
+            </select>
+            <a class="btn btn-success">
+              <i class="bi bi-plus-circle"></i>
+              <span>New Server</span>
+            </a>
+            <button type="button" class="btn btn-primary">Print Report</button>
+          </div>
+        </div>
+      </div>
+      <br>
+      
+    </div>
+  </div>
+</div>

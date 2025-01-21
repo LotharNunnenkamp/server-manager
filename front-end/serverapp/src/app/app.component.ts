@@ -8,7 +8,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
