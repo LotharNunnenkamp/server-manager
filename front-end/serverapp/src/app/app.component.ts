@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ServerService } from './service/server.service';
 import { catchError, map, Observable, of, startWith } from 'rxjs';
 import { AppState } from './interface/app-state';
 import { CustomResponse } from './interface/custom-response';
 import { DataState } from './enum/data-state.enum';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Status } from './enum/status.enum';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +19,12 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent implements OnInit {
 
-  appState$: Observable<AppState<CustomResponse>> | null = null;
+  readonly DataState = DataState;
+  readonly Status = Status;
+
+  appState$: Observable<AppState<CustomResponse>> = of({
+    dataState: DataState.LOADED_STATE,
+    });
 
   constructor(private serverService: ServerService) { }
 
