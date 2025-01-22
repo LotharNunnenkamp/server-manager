@@ -71,7 +71,7 @@
       </div>
 
       <div *ngIf="(appState$ | async)?.dataState === DataState.ERROR_STATE">
-        <h1>ERROR</h1>
+        <div class="alert alert-danger">{{ (appState$ | async)?.error }}</div>
       </div>
 
     </div>
