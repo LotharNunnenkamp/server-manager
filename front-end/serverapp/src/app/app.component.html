@@ -50,14 +50,12 @@
               <td>{{server.memory}}</td>
               <td>{{server.type}}</td>
               <td>
-                <span
-                  [ngClass]="{'text-bg-danger': server.status === Status.SERVER_DOWN, 'text-bg-success': server.status === Status.SERVER_UP}"
-                  class="badge">
+                <span [ngClass]="{'text-bg-danger': server.status === Status.SERVER_DOWN, 'text-bg-success': server.status === Status.SERVER_UP}" class="badge">
                   {{ server.status === Status.SERVER_DOWN ? 'SERVER DOWN' : 'SERVER UP' }}
                 </span>
               </td>
               <td>
-                <a style="cursor: pointer;">
+                <a (click)="pingServer(server.ipAddress)" style="cursor: pointer;">
                   <span *ngIf="(filterSubject$ | async) === '' || (filterSubject$ | async) !== server.ipAddress " class="material-icons">
                     network_ping
                   </span>

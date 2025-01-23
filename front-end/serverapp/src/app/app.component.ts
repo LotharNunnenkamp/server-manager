@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ServerService } from './service/server.service';
-import { BehaviorSubject, catchError, map, Observable, of, startWith, tap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, shareReplay, startWith, tap } from 'rxjs';
 import { AppState } from './interface/app-state';
 import { CustomResponse } from './interface/custom-response';
 import { DataState } from './enum/data-state.enum';
@@ -20,16 +20,11 @@ import { Status } from './enum/status.enum';
 export class AppComponent implements OnInit {
 
   readonly DataState = DataState;
-
   readonly Status = Status;
-
+  appState$!: Observable<AppState<CustomResponse>>;
   private filterSubject = new BehaviorSubject<string>('');
-
   filterSubject$ = this.filterSubject.asObservable();
-
-  appState$: Observable<AppState<CustomResponse>> = of({
-    dataState: DataState.LOADING_STATE,
-  });
+  private dataSubject = new BehaviorSubject<CustomResponse>({} as CustomResponse);
 
   constructor(private serverService: ServerService) { }
 
@@ -37,6 +32,7 @@ export class AppComponent implements OnInit {
     this.appState$ = this.serverService.servers$()
       .pipe(
         map(response => {
+          this.dataSubject.next(response);
           return {
             dataState: DataState.LOADED_STATE,
             appData: response,
@@ -46,6 +42,37 @@ export class AppComponent implements OnInit {
           dataState: DataState.LOADING_STATE
         }),
         catchError((error: string) => {
+          return of({
+            dataState: DataState.ERROR_STATE,
+            error
+          })
+        })
+      )
+  }
+
+  pingServer(ipAddress: string): void {
+    this.filterSubject.next(ipAddress);
+    this.appState$ = this.serverService.ping$(ipAddress)
+      .pipe(
+        map(response => {
+          const servers = this.dataSubject.value.data.servers;
+          const server = response.data.server;
+          if (servers && server) {
+            const index = servers?.findIndex(s => s.id === server.id);
+            servers[index] = server;
+          }
+          this.filterSubject.next('');
+          return {
+            dataState: DataState.LOADED_STATE,
+            appData: this.dataSubject.value,
+          }
+        }),
+        startWith({
+          dataState: DataState.LOADED_STATE,
+          appData: this.dataSubject.value
+        }),
+        catchError((error: string) => {
+          this.filterSubject.next('');
           return of({
             dataState: DataState.ERROR_STATE,
             error
