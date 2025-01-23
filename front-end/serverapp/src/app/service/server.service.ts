@@ -12,14 +12,14 @@ export class ServerService {
 
   private readonly apiUrl = 'http://localhost:8080';
 
-  servers$: Observable<CustomResponse> | null = null;
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) {
-    this.servers$ = this.http.get<CustomResponse>(`${this.apiUrl}/server/list`)
+  servers$ = (): Observable<CustomResponse> => {
+    return this.http.get<CustomResponse>(`${this.apiUrl}/server/list`)
     .pipe(
       tap(console.log),
       catchError(this.handleError)
-    );
+    )
   }
 
   save$ = (server: Server): Observable<CustomResponse> =>{

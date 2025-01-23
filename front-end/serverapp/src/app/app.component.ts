@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ServerService } from './service/server.service';
-import { BehaviorSubject, catchError, map, Observable, of, startWith } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, startWith, tap } from 'rxjs';
 import { AppState } from './interface/app-state';
 import { CustomResponse } from './interface/custom-response';
 import { DataState } from './enum/data-state.enum';
@@ -28,36 +28,30 @@ export class AppComponent implements OnInit {
   filterSubject$ = this.filterSubject.asObservable();
 
   appState$: Observable<AppState<CustomResponse>> = of({
-    dataState: DataState.LOADED_STATE,
-    });
+    dataState: DataState.LOADING_STATE,
+  });
 
   constructor(private serverService: ServerService) { }
 
   ngOnInit(): void {
-    if (this.serverService.servers$) {
-      this.appState$ = this.serverService.servers$
-        .pipe(
-          map(response => {
-            return {
-              dataState: DataState.LOADED_STATE,
-              appData: response,
-            }
-          }),
-          startWith({
-            dataState: DataState.LOADING_STATE
-          }),
-          catchError((error: string) => {
-            return of({
-              dataState: DataState.ERROR_STATE,
-              error
-            })
+    this.appState$ = this.serverService.servers$()
+      .pipe(
+        map(response => {
+          return {
+            dataState: DataState.LOADED_STATE,
+            appData: response,
+          }
+        }),
+        startWith({
+          dataState: DataState.LOADING_STATE
+        }),
+        catchError((error: string) => {
+          return of({
+            dataState: DataState.ERROR_STATE,
+            error
           })
-        )
-    } else {
-      this.appState$ = of({
-        dataState: DataState.ERROR_STATE,
-        error: 'No data available'
-      })
-    }
+        })
+      )
   }
+
 }
