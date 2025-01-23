@@ -46,7 +46,8 @@ export class AppComponent implements OnInit {
             dataState: DataState.ERROR_STATE,
             error
           })
-        })
+        }),
+        shareReplay(1)
       )
   }
 
