@@ -7,10 +7,10 @@
             <h2>Manage Servers</h2>
           </div>
           <div class="col-sm-6">
-            <select class="btn btn-info" name="status">
-              <option value="ALL">ALL</option>
-              <option value="SERVER_UP">SERVER UP</option>
-              <option value="SERVER_DOWN">SERVER DOWN</option>
+            <select [ngModel]="Status.ALL" (ngModelChange)="filterServers($event)" class="btn btn-info" name="status">
+              <option [ngValue]="Status.ALL">ALL</option>
+              <option [ngValue]="Status.SERVER_UP">SERVER UP</option>
+              <option [ngValue]="Status.SERVER_DOWN">SERVER DOWN</option>
             </select>
             <a class="btn btn-success">
               <i class="bi bi-plus-circle"></i>

@@ -51,10 +51,11 @@ export class ServerService {
             `Servers filter by ${status === Status.SERVER_UP ? 'SERVER UP' : 'SERVER DOWN'} status` :
             `No servers of ${status} found`,
             data: {
-              servers: response.data.servers!.filter(server => server.status === status)
+              servers: response.data.servers?.filter(server => server.status === status)
             }
           }
         );
+
         subscriber.complete();
       }
     )

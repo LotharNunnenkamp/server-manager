@@ -5,14 +5,15 @@ import { AppState } from './interface/app-state';
 import { CustomResponse } from './interface/custom-response';
 import { DataState } from './enum/data-state.enum';
 import { CommonModule } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { Status } from './enum/status.enum';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -82,4 +83,28 @@ export class AppComponent implements OnInit {
       )
   }
 
+  filterServers(status: Status): void {
+
+    this.appState$ = this.serverService.filter$(status, this.dataSubject.value)
+      .pipe(
+        map(response => {
+          return {
+            dataState: DataState.LOADED_STATE,
+            appData: response,
+          }
+        }),
+        startWith({
+          dataState: DataState.LOADED_STATE,
+          appData: this.dataSubject.value
+        }),
+        catchError((error: string) => {
+          this.filterSubject.next('');
+          return of({
+            dataState: DataState.ERROR_STATE,
+            error
+          })
+        }),
+        shareReplay(1)
+      )
+  }
 }
