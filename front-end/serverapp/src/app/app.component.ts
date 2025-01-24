@@ -5,8 +5,9 @@ import { AppState } from './interface/app-state';
 import { CustomResponse } from './interface/custom-response';
 import { DataState } from './enum/data-state.enum';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Status } from './enum/status.enum';
+import { Server } from './interface/server';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,8 @@ export class AppComponent implements OnInit {
   private filterSubject = new BehaviorSubject<string>('');
   filterSubject$ = this.filterSubject.asObservable();
   private dataSubject = new BehaviorSubject<CustomResponse>({} as CustomResponse);
+  private isLoading = new BehaviorSubject<boolean>(false);
+  isLoading$ = this.isLoading.asObservable();
 
   constructor(private serverService: ServerService) { }
 
@@ -99,6 +102,48 @@ export class AppComponent implements OnInit {
         }),
         catchError((error: string) => {
           this.filterSubject.next('');
+          return of({
+            dataState: DataState.ERROR_STATE,
+            error
+          })
+        }),
+        shareReplay(1)
+      )
+  }
+
+  saveServer(form: NgForm): void {
+    this.isLoading.next(true);
+    this.appState$ = this.serverService.save$(form.value as Server)
+      .pipe(
+        map(response => {
+          const servers = this.dataSubject.value.data.servers || [];
+          const server = response.data.server;
+          if (server) {
+            this.dataSubject.next(
+              {
+                ...response,
+                data: {
+                  servers: [
+                    server,
+                    ...servers
+                  ]
+                }
+              });
+          }
+          document.getElementById('closeModal')?.click();
+          this.isLoading.next(false);
+          form.resetForm({ status: this.Status.SERVER_DOWN });
+          return {
+            dataState: DataState.LOADED_STATE,
+            appData: this.dataSubject.value,
+          }
+        }),
+        startWith({
+          dataState: DataState.LOADED_STATE,
+          appData: this.dataSubject.value
+        }),
+        catchError((error: string) => {
+          this.isLoading.next(false);
           return of({
             dataState: DataState.ERROR_STATE,
             error
