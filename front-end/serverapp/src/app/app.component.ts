@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
   private dataSubject = new BehaviorSubject<CustomResponse>({} as CustomResponse);
   private isLoading = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoading.asObservable();
+  selectedPrintFormat: string | null = null;
 
   constructor(private serverService: ServerService) { }
 
@@ -180,6 +181,23 @@ export class AppComponent implements OnInit {
         }),
         shareReplay(1)
       )
+  }
+
+  printReport(printType: string): void {
+    if(printType === 'PDF'){
+      window.print();
+    } else {
+      let dataType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
+      let tableSelect = document.getElementById('servers');
+      let tableHtml = tableSelect?.outerHTML.replace(/ /g, '%20');
+      let downloadLink = document.createElement('a');
+      document.body.appendChild(downloadLink);
+      downloadLink.href = 'data:' + dataType + ', ' + tableHtml;
+      downloadLink.download = 'servers-report.xls';
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+    setTimeout(() => { this.selectedPrintFormat = null; }, 500);
   }
 }
 
