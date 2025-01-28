@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Status } from './enum/status.enum';
 import { Server } from './interface/server';
+import { NotificationService } from './service/notification.service';
+
 
 @Component({
   selector: 'app-root',
@@ -31,13 +33,14 @@ export class AppComponent implements OnInit {
   isLoading$ = this.isLoading.asObservable();
   selectedPrintFormat: string | null = null;
 
-  constructor(private serverService: ServerService) { }
+  constructor(private serverService: ServerService, private notifier: NotificationService) { }
 
   ngOnInit(): void {
     this.appState$ = this.serverService.servers$()
       .pipe(
         map(response => {
           this.dataSubject.next(response);
+          this.notifier.showSuccess(response.message);
           return {
             dataState: DataState.LOADED_STATE,
             appData: response,
@@ -47,6 +50,7 @@ export class AppComponent implements OnInit {
           dataState: DataState.LOADING_STATE
         }),
         catchError((error: string) => {
+          this.notifier.showError(error, 'Error');
           return of({
             dataState: DataState.ERROR_STATE,
             error
@@ -68,6 +72,7 @@ export class AppComponent implements OnInit {
             servers[index] = server;
           }
           this.filterSubject.next('');
+          this.notifier.showInfo(response.message);
           return {
             dataState: DataState.LOADED_STATE,
             appData: this.dataSubject.value,
@@ -79,6 +84,7 @@ export class AppComponent implements OnInit {
         }),
         catchError((error: string) => {
           this.filterSubject.next('');
+          this.notifier.showError(error, 'Error');
           return of({
             dataState: DataState.ERROR_STATE,
             error
@@ -91,6 +97,7 @@ export class AppComponent implements OnInit {
     this.appState$ = this.serverService.filter$(status, this.dataSubject.value)
       .pipe(
         map(response => {
+          this.notifier.showSuccess(response.message);
           return {
             dataState: DataState.LOADED_STATE,
             appData: response,
@@ -102,6 +109,7 @@ export class AppComponent implements OnInit {
         }),
         catchError((error: string) => {
           this.filterSubject.next('');
+          this.notifier.showError(error, 'Error');
           return of({
             dataState: DataState.ERROR_STATE,
             error
@@ -133,6 +141,7 @@ export class AppComponent implements OnInit {
           document.getElementById('closeModal')?.click();
           this.isLoading.next(false);
           form.resetForm({ status: this.Status.SERVER_DOWN });
+          this.notifier.showSuccess(response.message);
           return {
             dataState: DataState.LOADED_STATE,
             appData: this.dataSubject.value,
@@ -144,6 +153,7 @@ export class AppComponent implements OnInit {
         }),
         catchError((error: string) => {
           this.isLoading.next(false);
+          this.notifier.showError(error, 'Error');
           return of({
             dataState: DataState.ERROR_STATE,
             error
@@ -163,6 +173,7 @@ export class AppComponent implements OnInit {
               servers: this.dataSubject.value.data.servers?.filter(s => s.id !== server.id)
             }
           });
+          this.notifier.showSuccess(response.message);
           return {
             dataState: DataState.LOADED_STATE,
             appData: this.dataSubject.value,
@@ -174,6 +185,7 @@ export class AppComponent implements OnInit {
         }),
         catchError((error: string) => {
           this.filterSubject.next('');
+          this.notifier.showError(error, 'Error');
           return of({
             dataState: DataState.ERROR_STATE,
             error
@@ -184,6 +196,7 @@ export class AppComponent implements OnInit {
   }
 
   printReport(printType: string): void {
+    this.notifier.showSuccess("Printing report...");
     if(printType === 'PDF'){
       window.print();
     } else {
