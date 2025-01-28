@@ -87,7 +87,6 @@ export class AppComponent implements OnInit {
   }
 
   filterServers(status: Status): void {
-
     this.appState$ = this.serverService.filter$(status, this.dataSubject.value)
       .pipe(
         map(response => {
@@ -152,4 +151,36 @@ export class AppComponent implements OnInit {
         shareReplay(1)
       )
   }
+
+  deleteServer(server: Server): void {
+    this.appState$ = this.serverService.delete$(server.id)
+      .pipe(
+        map(response => {
+          this.dataSubject.next({
+            ...response,
+            data: {
+              servers: this.dataSubject.value.data.servers?.filter(s => s.id !== server.id)
+            }
+          });
+          return {
+            dataState: DataState.LOADED_STATE,
+            appData: this.dataSubject.value,
+          }
+        }),
+        startWith({
+          dataState: DataState.LOADED_STATE,
+          appData: this.dataSubject.value
+        }),
+        catchError((error: string) => {
+          this.filterSubject.next('');
+          return of({
+            dataState: DataState.ERROR_STATE,
+            error
+          })
+        }),
+        shareReplay(1)
+      )
+  }
 }
+
+
