@@ -1,8 +1,8 @@
 package com.example.server_manager.controller;
 
+import com.example.server_manager.dto.ServerDTO;
 import com.example.server_manager.enums.Status;
 import com.example.server_manager.model.Response;
-import com.example.server_manager.model.Server;
 import com.example.server_manager.service.ServerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class ServerController {
 
     @GetMapping("/ping/{ipAddress}")
     public ResponseEntity<Response> pingServer(@PathVariable("ipAddress") String ipAddress) throws IOException {
-        Server server = serverService.ping(ipAddress);
+        ServerDTO server = serverService.ping(ipAddress);
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(LocalDateTime.now())
@@ -57,11 +56,11 @@ public class ServerController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Response> saveServer(@RequestBody @Valid Server server){
+    public ResponseEntity<Response> saveServer(@RequestBody @Valid ServerDTO serverDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Response.builder()
                         .timeStamp(LocalDateTime.now())
-                        .data(Map.of("server", serverService.create(server)))
+                        .data(Map.of("server", serverService.create(serverDto)))
                         .message("Server created")
                         .httpStatus(HttpStatus.CREATED)
                         .statusCode(HttpStatus.CREATED.value())

@@ -1,5 +1,6 @@
 package com.example.server_manager.service;
 
+import com.example.server_manager.dto.ServerDTO;
 import com.example.server_manager.model.Server;
 
 import java.io.IOException;
@@ -7,15 +8,15 @@ import java.util.Collection;
 
 public interface ServerService {
 
-    Server create(Server server);
+    ServerDTO create(ServerDTO serverDTO);
 
-    Server ping(String ipAddress) throws IOException;
+    ServerDTO ping(String ipAddress) throws IOException;
 
-    Collection<Server> list(int limit);
+    Collection<ServerDTO> list(int limit);
 
-    Server get(Long id);
+    ServerDTO get(Long id);
 
-    Server update(Server server);
+    ServerDTO update(ServerDTO serverDto);
 
     Boolean delete(Long id);
 
