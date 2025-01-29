@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { ServerService } from './service/server.service';
 import { BehaviorSubject, catchError, map, Observable, of, shareReplay, startWith, tap } from 'rxjs';
 import { AppState } from './interface/app-state';
@@ -19,7 +19,8 @@ import { NotificationService } from './service/notification.service';
     FormsModule
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
 
