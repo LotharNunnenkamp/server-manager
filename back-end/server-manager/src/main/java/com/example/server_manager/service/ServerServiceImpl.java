@@ -4,6 +4,7 @@ import com.example.server_manager.dto.ServerDTO;
 import com.example.server_manager.enums.Status;
 import com.example.server_manager.model.Server;
 import com.example.server_manager.repository.ServerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public ServerDTO get(Long id) {
         log.info("Fetching server by id: {}", id);
-        Server serverFound = serverRepository.findById(id).orElseThrow(() -> new RuntimeException("Server not found for id: " + id));
+        Server serverFound = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server not found for id: " + id));
         return convertModelToDto(serverFound);
     }
 

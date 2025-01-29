@@ -1,6 +1,7 @@
 package com.example.server_manager.exception;
 
 import com.example.server_manager.model.Response;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +45,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<Response> handleFileNotFoundException(FileNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(
+                        Response.builder()
+                                .timeStamp(LocalDateTime.now())
+                                .statusCode(HttpStatus.NOT_FOUND.value())
+                                .httpStatus(HttpStatus.NOT_FOUND)
+                                .reason("Reason/cause: " + e.getCause())
+                                .message("Failed to process request: " + e.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Response> handleEntityNotFoundException(EntityNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(
                         Response.builder()
