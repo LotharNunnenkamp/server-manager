@@ -11,14 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 @Service
 @Slf4j
@@ -29,6 +26,7 @@ public class ServerServiceImpl implements ServerService {
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
     private final ImageUrlGeneratorImpl imageUrlGenerator;
+    private final NetworkPingerImpl networkPinger;
 
     @Override
     public ServerDTO create(ServerDTO serverDto) {
@@ -43,8 +41,7 @@ public class ServerServiceImpl implements ServerService {
     public ServerDTO ping(String ipAddress) throws IOException {
         log.info("Pinging server IP: {}", ipAddress);
         Server server = serverRepository.findByIpAddress(ipAddress);
-        InetAddress inetAddress = InetAddress.getByName(ipAddress);
-        server.setStatus(inetAddress.isReachable(10000) ? Status.SERVER_UP : Status.SERVER_DOWN);
+        server.setStatus(networkPinger.pingServer(ipAddress));
         serverRepository.save(server);
         return serverMapper.toDto(server);
     }
