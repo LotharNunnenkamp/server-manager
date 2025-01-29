@@ -2,6 +2,7 @@ package com.example.server_manager.service;
 
 import com.example.server_manager.dto.ServerDTO;
 import com.example.server_manager.enums.Status;
+import com.example.server_manager.mapper.ServerMapper;
 import com.example.server_manager.model.Server;
 import com.example.server_manager.repository.ServerRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,13 +27,14 @@ import java.util.Random;
 public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
+    private final ServerMapper serverMapper;
 
     @Override
     public ServerDTO create(ServerDTO serverDto) {
         log.info("Saving new server: {}", serverDto.getName());
-        Server server = convertDtoToModel(serverDto);
+        Server server = serverMapper.toModel(serverDto);
         Server serverPersisted = serverRepository.save(server);
-        return convertModelToDto(serverPersisted);
+        return serverMapper.toDto(serverPersisted);
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ServerServiceImpl implements ServerService {
         InetAddress inetAddress = InetAddress.getByName(ipAddress);
         server.setStatus(inetAddress.isReachable(10000) ? Status.SERVER_UP : Status.SERVER_DOWN);
         serverRepository.save(server);
-        return convertModelToDto(server);
+        return serverMapper.toDto(server);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class ServerServiceImpl implements ServerService {
         List<Server> servers = serverRepository.findAll(PageRequest.of(0, limit)).toList();
         List<ServerDTO> serversDto = new ArrayList<>();
         servers.forEach(server -> {
-            serversDto.add(convertModelToDto(server));
+            serversDto.add(serverMapper.toDto(server));
         });
         return serversDto;
     }
@@ -60,15 +62,15 @@ public class ServerServiceImpl implements ServerService {
     public ServerDTO get(Long id) {
         log.info("Fetching server by id: {}", id);
         Server serverFound = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server not found for id: " + id));
-        return convertModelToDto(serverFound);
+        return serverMapper.toDto(serverFound);
     }
 
     @Override
     public ServerDTO update(ServerDTO serverDto) {
         log.info("Updating server: {}", serverDto.getName());
-        Server server = convertDtoToModel(serverDto);
+        Server server = serverMapper.toModel(serverDto);
         Server serverUpdated = serverRepository.save(server);
-        return convertModelToDto(serverUpdated);
+        return serverMapper.toDto(serverUpdated);
     }
 
     @Override
@@ -85,27 +87,5 @@ public class ServerServiceImpl implements ServerService {
                 .toUriString();
     }
 
-    private ServerDTO convertModelToDto(Server server){
-        return ServerDTO.builder()
-                .id(server.getId())
-                .ipAddress(server.getIpAddress())
-                .name(server.getName())
-                .memory(server.getMemory())
-                .type(server.getType())
-                .imageUrl(server.getImageUrl())
-                .status(server.getStatus())
-                .build();
-    }
 
-    private Server convertDtoToModel(ServerDTO serverDto){
-        return Server.builder()
-                .id(serverDto.getId())
-                .ipAddress(serverDto.getIpAddress())
-                .name(serverDto.getName())
-                .memory(serverDto.getMemory())
-                .type(serverDto.getType())
-                .imageUrl(serverDto.getImageUrl())
-                .status(serverDto.getStatus())
-                .build();
-    }
 }
