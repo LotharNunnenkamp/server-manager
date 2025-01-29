@@ -28,11 +28,13 @@ public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
+    private final ImageUrlGeneratorImpl imageUrlGenerator;
 
     @Override
     public ServerDTO create(ServerDTO serverDto) {
         log.info("Saving new server: {}", serverDto.getName());
         Server server = serverMapper.toModel(serverDto);
+        server.setImageUrl(imageUrlGenerator.generateServerImageUrl());
         Server serverPersisted = serverRepository.save(server);
         return serverMapper.toDto(serverPersisted);
     }
@@ -79,13 +81,4 @@ public class ServerServiceImpl implements ServerService {
         serverRepository.deleteById(id);
         return Boolean.TRUE;
     }
-
-    private String setServerImageUrl() {
-        String[] serversImageNames = {"server1.png", "server2.png", "server3.png", "server4.png"};
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/server/image/" + serversImageNames[new Random().nextInt(4)])
-                .toUriString();
-    }
-
-
 }
