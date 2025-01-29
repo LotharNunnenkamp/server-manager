@@ -2,7 +2,9 @@ package com.example.server_manager.mapper;
 
 import com.example.server_manager.dto.ServerDTO;
 import com.example.server_manager.model.Server;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ServerMapper {
 
     public ServerDTO toDto(Server server){
