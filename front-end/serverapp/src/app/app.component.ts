@@ -73,7 +73,11 @@ export class AppComponent implements OnInit {
             servers[index] = server;
           }
           this.filterSubject.next('');
-          this.notifier.showInfo(response.message);
+          if (response.data.server?.status === Status.SERVER_UP) {
+            this.notifier.showSuccess(response.message);
+          } else {
+            this.notifier.showError(response.message);
+          }
           return {
             dataState: DataState.LOADED_STATE,
             appData: this.dataSubject.value,
@@ -90,7 +94,8 @@ export class AppComponent implements OnInit {
             dataState: DataState.ERROR_STATE,
             error
           })
-        })
+        }),
+        shareReplay(1)
       )
   }
 
